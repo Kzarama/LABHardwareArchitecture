@@ -1,8 +1,8 @@
 %include "io.inc"
 section .data
-BD_dato1 db "02000.00",0
-BD_delta db "00005.02",0
-iterations db 5
+BD_dato1 db "000005.30",0
+BD_delta db "001013.90",0
+iterations db 11
 section .text
 global CMAIN
 CMAIN:
@@ -16,16 +16,29 @@ CMAIN:
     add esp, 4
     dec ecx
     mov bx, [iterations]
-for:
     push ecx
     push bx
-    lea esi, [BD_dato1] ;dir operando A
+    lea esi, [BD_delta] ;dir operando A
     push esi
-    lea edx, [BD_delta] ;dir operando B
+    lea edx, [BD_dato1] ;dir operando B
     push edx
     lea edi, [BD_dato1] ;dir result
     push edi
     call subtract
+    add esp, 12
+    pop bx
+    pop ecx
+    dec bx
+for:
+    push ecx
+    push bx
+    lea esi, [BD_delta] ;dir operando A
+    push esi
+    lea edx, [BD_dato1] ;dir operando B
+    push edx
+    lea edi, [BD_dato1] ;dir result
+    push edi
+    call add
     add esp, 12
     pop bx
     pop ecx
@@ -79,8 +92,37 @@ L3:
 L2: 
     mov [edi+ecx], al
     dec ecx
-    cmp ecx, -1
+    cmp ecx, 0
     jne L1
+    mov al, 2dh
+    mov [edi], al
+    mov esp, ebp
+    pop ebp
+    ret
+;-----------------------------------------
+;metodo de suma
+add:
+    push    ebp
+    mov     ebp, esp
+    mov esi, [ebp+16]
+    mov edx, [ebp+12]
+    mov edi, [ebp+8]
+L11:
+    mov al, [ esi+ ecx]
+    mov bl, [ edx + ecx]
+    cmp al, '.'
+    je L21
+    add aL, Ah  ;Ah=0 Ah=1
+    xor ah,ah 
+L31:
+    add al, bl
+    AAa ;AAS AH=0, AH=FF =-1
+    add al, 30h
+L21:
+    mov [edi +ecx], al
+    dec ecx
+    cmp ecx, 0
+    jne L11
     mov esp, ebp
     pop ebp
     ret
